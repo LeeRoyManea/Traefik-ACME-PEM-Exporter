@@ -1,41 +1,59 @@
-Traefik ACME PEM Exporter
+# Traefik ACME PEM Exporter
 
 This dotnet application exports PEM certificates from Traefik's acme.json file.
-Requirements
+## Requirements
 
-    Docker installed on your system
+Docker or a alternative for obvious reason
 
-Usage
+## Usage
 
-    Pull the Docker image:
+You dont have to use the Environment Variables.
+Just mount the volumes. The default values are described below.
 
-    
-```bash
-docker pull <image_name>
-```
+If not changed, the *Traefik ACME PEM Exporter* export PEM certificates from the specified acme.json file to the provided export path every 15 minutes.
 
-
-Set the following environment variables:
-
-    ExportPath: Path where the PEM certificates will be exported.
-    AcmePath: Path to the acme.json file.
-    TimeInterval: Time interval in minutes for exporting certificates.
-
-Example:
+### Docker CLI
 
 ```bash
-export ExportPath=/path/to/export
-export AcmePath=/path/to/acme.json
-export TimeInterval=5
+docker pull leeroymanea/dotnet-traefik-exporter:latest
+docker run \
+  -e TimeInterval=5 \
+  -e AcmePath=/data/acme.json \
+  -e ExportPath=/data/export \
+  -v /path/to/acme.json:/data/acme.json \
+  -v /path/to/export:/data/export \
+  leeroymanea/dotnet-traefik-exporter:latest
 ```
 
-Run the Docker container:
+### Docker Compose
 
-bash
+```yml
+version: '3'
 
-    docker run -e ExportPath=$ExportPath -e AcmePath=$AcmePath -e TimeInterval=$TimeInterval <image_name>
+services:
+  traefik-exporter:
+    image: leeroymanea/dotnet-traefik-exporter:latest
+    environment:
+      - TimeInterval=15
+      - AcmePath=/data/acme.json
+      - ExportPath=/data/export
+    volumes:
+      - /path/to/export:/data/export
+      - /path/to/acme.json:/data/acme.json
+```
 
-The application will automatically export PEM certificates from the specified acme.json file to the provided export path at the specified time interval.
-License
+The output will look like:
+```
+Starting new export
+Exporting my.domain.com to /data/export/my.domain.com
+Exporting my.second-domain.com to /data/export/my.second-domain.com
+....
+Certificate files exported successfully.
+No new changes since 06:13:55 - 18.04.2024
+No new changes since 06:13:55 - 18.04.2024
+....
+```
 
-This project is licensed under the MIT License.
+## License
+
+This project is licensed under the [GPLv3](LICENSE).
