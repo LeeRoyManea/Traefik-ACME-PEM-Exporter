@@ -1,15 +1,16 @@
 # Use the official .NET Core SDK image
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
-  
-# Copy csproj and restore as distinct layers
-COPY *.csproj ./
-RUN dotnet restore
-  
- # Copy everything else and build the application
 COPY . ./
+
+RUN dotnet restore
+ 
 RUN dotnet publish -c Release -o out
   
+RUN dotnet restore "TraefikExporter/TraefikExporter.csproj"
+RUN dotnet build "TraefikExporter/TraefikExporter.csproj" -c Release
+RUN dotnet publish "TraefikExporter/TraefikExporter.csproj" -c Release -o out
+
  # Build runtime image
 FROM mcr.microsoft.com/dotnet/runtime:8.0 AS runtime
 WORKDIR /app
