@@ -19,15 +19,14 @@ public class TraefikAcmeExporterService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         TraefikAcmeExporter exporter = new TraefikAcmeExporter();
-        while (await _pdfImportTimer.WaitForNextTickAsync(cancellationToken: stoppingToken) &&
-               !stoppingToken.IsCancellationRequested)
+        do
         {
             if (!File.Exists(acmePath))
             {
                 Console.Error.WriteLine($"File does not exists {acmePath}");
                 continue;
             }
-            
+
             if (File.GetLastWriteTime(acmePath) is { } lastModified && lastModified.Ticks > Modified.Ticks)
             {
                 Console.WriteLine($"Starting new export");
@@ -39,6 +38,6 @@ public class TraefikAcmeExporterService : BackgroundService
             {
                 Console.WriteLine($"No new changes since {Modified:hh:mm:ss - dd.MM.yyyy}");
             }
-        }
+        } while (await _pdfImportTimer.WaitForNextTickAsync(cancellationToken: stoppingToken) && !stoppingToken.IsCancellationRequested);
     }
 }
