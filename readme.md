@@ -57,3 +57,9 @@ No new changes since 06:13:55 - 18.04.2024
 ## License
 
 This project is licensed under the [GPLv3](LICENSE).
+
+## Support me 
+
+If you want to support me, buy a [Coffee](https://ko-fi.com/leeroy_manea)
+
+Thank you
